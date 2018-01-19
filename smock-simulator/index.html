@@ -1,0 +1,133 @@
+<html>
+
+<head>
+    <script src="demo-simulator/js/jquery-1.9.1.js"></script>
+    <script src="demo-simulator/js/stomp.js"></script>
+    <script src="demo-simulator/js/jquery.ebus.js"></script>
+    <script src="demo-simulator/js/viz.js"></script>
+    <script>
+        var tran_chan;
+        var trig_chan;
+    </script>
+    <script src="demo-simulator/config.js"></script>
+    <script src="demo-simulator/js/jquery.smock.js"></script>
+    <meta charset='utf-8' />
+    <style>
+        body > div {
+            /*float: left;*/
+        }
+        button {
+            font-size: 0.7em;
+        }
+        input {
+            width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <table>
+        <tr><td><label>EBus Broker:</label></td><td><input type="text" id="ebus_broker" value="0.0.0.0"></input></td></tr>
+        <tr><td><label>Transition:</label></td><td><input type="text" id="tran_chan" value="/topic/app"></input></td></tr>
+        <tr><td><label>Trigger:</label></td><td><input type="text" id="trig_chan" value="/queue/app"></input></td></tr>
+        <tr><td><label>Status:</label></td><td><label id="status"></label></td></tr>
+        </table>
+        <div><button type="button" id="conn">Connect</button></div>
+        <div><textarea style="width:50%" rows="10" id="msg"></textarea></div>
+    </div>
+    <table>
+    <tr><td><button type="button" trig="sys/sys_suspended">sys/sys_suspended</button></td><td><label>暫停服務</label></td><td><input type="text" value='{"msg":"產品已售完，暫時停止服務"}'></input></td></tr>
+    <tr><td><button type="button" trig="order/ordered">order/ordered</button></td><td><label>點菜p_id</label></td><td><input type="text" value='{"p_id":1}'></input></td></tr>
+    <tr><td><button type="button" trig="order/ordered">order/ordered</button></td><td><label>點菜chan</label></td><td><input type="text" value='{"chan":"A1"}'></input></td></tr>
+    <tr><td><button type="button" trig="payment/hint">payment/hint</button></td><td><label>支付提示</label></td><td><input type="text" value='{"payment_method":{"cash":{"price":10},"easycard":{"price":8},"ipass":{"price":6},"isc_moneycoin":{"price":10},"isc_linepay":{"price":10}},"p_id":3,"p_name":"可口可樂","chan":"A1"}'></input></td></tr>
+    <tr><td><button type="button" trig="payment/payment_begin">payment/payment_begin</button></td><td><label>投入第1個硬幣</label></td><td><input type="text" value='{"paid":10}'></input></td></tr>
+    <tr><td><button type="button" trig="payment/hint">payment/hint</button></td><td><label>繼續投入硬幣</label></td><td><input type="text" value='{"paid":20}'></input></td></tr>
+    <tr><td><button type="button" trig="payment/hint">payment/hint</button></td><td><label>已投入足額，等待確認</label></td><td><input type="text" value='{"paid":50,"pay_confirm":false}'></input></td></tr>
+    <tr><td><button type="button" trig="payment/failed">payment/failed</button></td><td><label>支付錯誤</label></td><td><input type="text" value='{"msg":"支付錯誤(305)"}'></input></td></tr>
+    <tr><td><button type="button" trig="dispense/start">dispense/start</button></td><td><label>開始出貨</label></td><td><input type="text" value='{"msg":"完成付款，商品出貨中"}'></input></td></tr>
+    <tr><td><button type="button" trig="dispense/prod_dispensed">dispense/prod_dispensed</button></td><td><label>出貨成功</label></td><td><input type="text" value='{"msg":"請取回商品，銘謝惠顧"}'></input></td></tr>
+    <!-- <tr><td><button type="button" trig="payment/set_countdown">payment/set_countdown</button></td><td><label>顯示倒數器</label></td><td><input type="text" value='{"countdown":45}'></input></td></tr>
+    <tr><td><button type="button" trig="payment/reset_countdown">payment/reset_countdown</button></td><td><label>關閉倒數器</label></td><td><input type="text"></input></td></tr> -->
+    <tr><td><button type="button" trig="payment/input">payment/input</button></td><td><label>確認購買</label></td><td><input type="text" value='{"pay_confirm":true}'></input></td></tr>
+    </table>
+
+    <div id="map"></div>
+    <script>
+        var conn; // global used
+        var id=window.location.search.substr(1);
+        d_ebus_broker=window.location.hostname;
+        var surfix=id?"."+id:"";
+        $("input#ebus_broker").val(d_ebus_broker);
+        $("input#tran_chan").val(d_tran_chan+surfix);
+        $("input#trig_chan").val(d_trig_chan+surfix);
+        function buttonConnectClick() {
+                // $("iframe").attr('src',"/demo-simulator/controller.html?"+id);
+                var hostname = $("#ebus_broker").val();
+                tran_chan = $("#tran_chan").val();
+                trig_chan = $("#trig_chan").val();
+                conn = $.ebus.connect({
+                    "ip": hostname,
+                    "subscribe": [
+                        tran_chan
+                    ]
+                }, function () {
+                    $('#status').text('connected');
+                    $('tr button').click(function () {
+                        var e = $(this).closest('tr').find('input').val();
+                        var arg;
+                        if (e) arg = JSON.parse(e);
+                        var trig = $(this).attr('trig');
+                        var tran = $(this).attr('tran');
+                        if (trig) {
+                            var ev = { 'e': trig };
+                            if (arg) ev.arg = arg;
+                            $.ebus.send(trig_chan, ev, conn);
+                        } else if (tran) {
+                            var ev = { 'e': tran };
+                            if (arg) ev.arg = arg;
+                            $.ebus.send(tran_chan, ev, conn);
+                        }
+                    });
+                    $.get('http://' + window.location.hostname + ':8080/stat', function (s) {
+                        var ss = s;
+                        if (s.smc) {
+                            ss = s.smc;
+                        }
+                        //alert(JSON.stringify(s));
+                        $.ebus.send(tran_chan, { 'e': 'sys/created', 'init': ss.sys }, conn);
+                        setTimeout(function () {
+                            $.ebus.send(tran_chan, { 'e': 'sess/created', 'init': ss.sess }, conn);
+                            setTimeout(function () {
+                                $.ebus.send(tran_chan, { 'e': 'order/created', 'init': ss.order }, conn);
+                                setTimeout(function () {
+                                    $.ebus.send(tran_chan, { 'e': 'reader/created', 'init': ss.reader }, conn);
+                                    setTimeout(function () {
+                                        $.ebus.send(tran_chan, { 'e': 'auth/created', 'init': ss.auth }, conn);
+                                        setTimeout(function () {
+                                            $.ebus.send(tran_chan, { 'e': 'payment/created', 'init': ss.payment }, conn);
+                                            setTimeout(function () {
+                                                $.ebus.send(tran_chan, { 'e': 'dispense/created', 'init': ss.dispense }, conn);
+                                            }, 2000);
+                                        }, 1000);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000);
+                        }, 1000);
+                    });
+                },
+                function () { $('#status').text('failed to connect'); });
+            }
+        $("#conn").click(buttonConnectClick);
+        $('body').on('ebusEvent',function(e,ebusEvent){
+            var text=$('#msg').text().substr(0,1000);
+            $('#msg').text(JSON.stringify(ebusEvent)+"\n"+text);
+        });
+        $(document).ready(function(){
+            $("button#conn").click();
+        });
+    </script>
+</body>
+
+</html>
+

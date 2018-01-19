@@ -1,0 +1,15 @@
+[
+    { "from": "none", "name": "start", "to": "PREPARE" },
+    { "from": "PREPARE", "name": "failed", "to": "END" },
+    { "from": "PREPARE", "name": "ready", "to": "DISPENSE" },
+    { "from": "PREPARE", "name": "hint", "to": "PREPARE" },
+    { "from": "DISPENSE", "name": "hint", "to": "DISPENSE" },
+    { "from": "DISPENSE", "name": "prod_dispensed", "to": "END" },
+    { "from": "DISPENSE", "name": "prod_stuck", "to": "REDISPENSE" },
+    { "from": "DISPENSE", "name": "failed", "to": "END" },
+    { "from": "REDISPENSE", "name": "hint", "to": "REDISPENSE" },
+    { "from": "REDISPENSE", "name": "prod_dispensed", "to": "END" },
+    { "from": "REDISPENSE", "name": "prod_stuck", "to": "END" },
+    { "from": "REDISPENSE", "name": "failed", "to": "END" },
+    { "from": "END", "name": "hint", "to": "END" }
+]

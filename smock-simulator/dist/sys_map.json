@@ -1,0 +1,82 @@
+[
+    {
+        "from": "none",
+        "name": "start",
+        "to": "INIT"
+    },
+    {
+        "from": "INIT",
+        "name": "sys_op",
+        "to": "OPERATION"
+    },
+    {
+        "from": "INIT",
+        "name": "sys_suspended",
+        "to": "SUSPEND"
+    },
+    {
+        "from": "OPERATION",
+        "name": "sys_admin",
+        "to": "ADMIN"
+    },
+    {
+        "from": "OPERATION",
+        "name": "sys_suspended",
+        "to": "SUSPEND"
+    },
+    {
+        "from": "OPERATION",
+        "name": "config_changed",
+        "to": "OPERATION"
+    },
+    {
+        "from": "OPERATION",
+        "name": "hint",
+        "to": "OPERATION"
+    },
+    {
+        "from": "ADMIN",
+        "name": "sys_op",
+        "to": "OPERATION"
+    },
+    {
+        "from": "ADMIN",
+        "name": "sys_suspended",
+        "to": "SUSPEND"
+    },
+    {
+        "from": "ADMIN",
+        "name": "sys_shutdown",
+        "to": "SHUTDOWN"
+    },
+    {
+        "from": "ADMIN",
+        "name": "set",
+        "to": "ADMIN"
+    },
+    {
+        "from": "ADMIN",
+        "name": "hint",
+        "to": "ADMIN"
+    },
+    {
+        "from": "SUSPEND",
+        "name": "sys_op",
+        "to": "OPERATION"
+    },
+    {
+        "from": "SUSPEND",
+        "name": "sys_admin",
+        "to": "ADMIN"
+    },
+    {
+        "from": "SUSPEND",
+        "name": "sys_shutdown",
+        "to": "SHUTDOWN"
+    },
+    {
+        "from": "SUSPEND",
+        "name": "hint",
+        "to": "SUSPEND"
+    }
+]

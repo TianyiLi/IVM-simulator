@@ -1,0 +1,16 @@
+[
+    { "from": "none", "name": "start", "to": "PREPARE" },
+    { "from": "PREPARE", "name": "input", "to": "PREPARE" },
+    { "from": "PREPARE", "name": "hint", "to": "PREPARE" },
+    { "from": "PREPARE", "name": "payment_begin", "to": "TRANSACTION" },
+    { "from": "PREPARE", "name": "timeout", "to": "END" },
+    { "from": "PREPARE", "name": "cancelled", "to": "END" },
+    { "from": "TRANSACTION", "name": "hint", "to": "TRANSACTION" },
+    { "from": "TRANSACTION", "name": "input", "to": "TRANSACTION" },
+    { "from": "TRANSACTION", "name": "timeout", "to": "END" },
+    { "from": "TRANSACTION", "name": "paid", "to": "END" },
+    { "from": "TRANSACTION", "name": "cancelled", "to": "END" },
+    { "from": "TRANSACTION", "name": "failed", "to": "END" },
+    { "from": "END", "name": "hint", "to": "END" },
+    { "from": "END", "name": "refund", "to": "END" }
+]

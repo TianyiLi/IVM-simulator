@@ -1,0 +1,5 @@
+[
+    { "from": "none", "name": "start", "to": "START" },
+    { "from": "START", "name": "read", "to": "START" },
+    { "from": "START", "name": "stop", "to": "none" }
+]
