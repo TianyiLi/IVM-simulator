@@ -1,0 +1,26 @@
+{
+  "name": "local-simulator",
+  "version": "1.0.0",
+  "description": "vmc smock simulator",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./test/*.spec.js",
+    "start": "node ./index.js"
+  },
+  "author": "Paul",
+  "license": "MIT",
+  "dependencies": {
+    "@types/javascript-state-machine": "^2.4.1",
+    "@types/minimist": "^1.2.0",
+    "@types/ws": "^4.0.0",
+    "javascript-state-machine": "./third-party/javascript-state-machine",
+    "live-server": "^1.2.0",
+    "merge": "^1.2.0",
+    "minimist": "^1.2.0",
+    "stomp": "^0.1.1",
+    "stomp-broker-js": "^1.1.1",
+    "stomp-service": "git+https://github.com/TianyiLi/stomp-service.git",
+    "webstomp-client": "^1.2.0",
+    "ws": "^4.0.0"
+  }
+}

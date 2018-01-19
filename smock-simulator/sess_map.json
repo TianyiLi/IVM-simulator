@@ -1,0 +1,9 @@
+[
+    { "from": "none", "name": "start", "to": "IDLE" },
+    { "from": "IDLE", "name": "hint", "to": "IDLE" },
+    { "from": "IDLE", "name": "session_begin", "to": "SESSION" },
+    { "from": "SESSION", "name": "hint", "to": "SESSION" },
+    { "from": "SESSION", "name": "timeout", "to": "IDLE" },
+    { "from": "SESSION", "name": "refresh_timeout", "to": "SESSION" },
+    { "from": "SESSION", "name": "session_end", "to": "IDLE" }
+]

@@ -1,0 +1,10 @@
+var ebus_broker='0.0.0.0';
+var ebus_broker_port=61614;
+var tran_chan='/topic/app';
+var trig_chan='/queue/app';
+var scoreboard='/tmp/tmpfs/smc';
+exports.ebus_broker=ebus_broker;
+exports.ebus_broker_port=ebus_broker_port;
+exports.tran_chan=tran_chan;
+exports.trig_chan=trig_chan;
+exports.scoreboard=scoreboard;

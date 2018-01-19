@@ -1,0 +1,26 @@
+self.cbs={
+    created:function(){
+        $.ebus.send(SMC.trig_chan,{'e':'sys/start'},conn);
+        setTimeout(function(){
+            SMC.create('sess');
+            setTimeout(function(){
+                SMC.create('reader');
+                setTimeout(function(){
+                    SMC.create('auth');
+                    setTimeout(function(){
+                        SMC.create('order');
+                        setTimeout(function(){
+                            SMC.create('payment');
+                            setTimeout(function(){
+                                SMC.create('dispense');
+                                setTimeout(function(){
+                                    SMC.create('invoice');
+                                },4000);
+                            },4000);
+                        },2000);
+                    },2000);
+                },2000);
+            },2000);
+        },2000);
+    }
+};

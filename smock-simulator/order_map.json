@@ -1,0 +1,7 @@
+[
+    { "from": "none", "name": "start", "to": "MENU" },
+    { "from": "MENU", "name": "preview", "to": "MENU" },
+    { "from": "MENU", "name": "ordered", "to": "MENU" },
+    { "from": "MENU", "name": "canced", "to": "END" },
+    { "from": "MENU", "name": "timeout", "to": "END" }
+]

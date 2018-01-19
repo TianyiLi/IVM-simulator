@@ -1,0 +1,32 @@
+[
+    {
+        "from": "none",
+        "name": "start",
+        "to": "MENU"
+    },
+    {
+        "from": "MENU",
+        "name": "input",
+        "to": "MENU"
+    },
+    {
+        "from": "MENU",
+        "name": "hint",
+        "to": "MENU"
+    },
+    {
+        "from": "MENU",
+        "name": "ordered",
+        "to": "MENU"
+    },
+    {
+        "from": "MENU",
+        "name": "cancelled",
+        "to": "END"
+    },
+    {
+        "from": "MENU",
+        "name": "timeout",
+        "to": "END"
+    }
+]

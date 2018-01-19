@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <script src="js/jquery-1.9.1.js"></script>
+    <script src="js/viz.js"></script>
+    <script src="js/jquery.smock.js"></script>
+    <style>
+        body > div {
+            /*float: left;*/
+        }
+        button {
+            font-size: 0.7em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        var map=window.location.search.substr(1);
+        $('#map').map(map);
+    </script>
+</body>
+
+</html>
+

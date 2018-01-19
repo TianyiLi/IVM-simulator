@@ -1,0 +1,72 @@
+[
+    {
+        "from": "none",
+        "name": "start",
+        "to": "PREPARE"
+    },
+    {
+        "from": "PREPARE",
+        "name": "input",
+        "to": "PREPARE"
+    },
+    {
+        "from": "PREPARE",
+        "name": "hint",
+        "to": "PREPARE"
+    },
+    {
+        "from": "PREPARE",
+        "name": "donated",
+        "to": "PROCESS"
+    },
+    {
+        "from": "PREPARE",
+        "name": "stored",
+        "to": "PROCESS"
+    },
+    {
+        "from": "PREPARE",
+        "name": "printout",
+        "to": "PROCESS"
+    },
+    {
+        "from": "PREPARE",
+        "name": "failed",
+        "to": "END"
+    },
+    {
+        "from": "PREPARE",
+        "name": "cancelled",
+        "to": "END"
+    },
+    {
+        "from": "PROCESS",
+        "name": "hint",
+        "to": "PROCESS"
+    },
+    {
+        "from": "PROCESS",
+        "name": "input",
+        "to": "PROCESS"
+    },
+    {
+        "from": "PROCESS",
+        "name": "failed",
+        "to": "END"
+    },
+    {
+        "from": "PROCESS",
+        "name": "got_invoice_no",
+        "to": "PROCESS"
+    },
+    {
+        "from": "PROCESS",
+        "name": "success",
+        "to": "END"
+    },
+    {
+        "from": "END",
+        "name": "start",
+        "to": "PREPARE"
+    }
+]
