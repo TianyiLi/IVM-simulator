@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@types/bluebird@^3.5.19":
+  version "3.5.19"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.19.tgz#1a47308819ac2d1d6d1ca4f5d800ac84924100de"
+
 "@types/events@*":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"
@@ -154,6 +158,10 @@ block-stream@*:
   resolved "https://registry.yarnpkg.com/block-stream/-/block-stream-0.0.9.tgz#13ebfe778a03205cfe03751481ebb4b3300c126a"
   dependencies:
     inherits "~2.0.0"
+
+bluebird@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
 boom@2.x.x:
   version "2.10.1"
@@ -1128,9 +1136,9 @@ stomp-broker-js@^1.1.1:
   dependencies:
     ws "^3.1.0"
 
-"stomp-service@https://github.com/TianyiLi/stomp-service.git":
+"stomp-service@git+https://github.com/TianyiLi/stomp-service.git":
   version "1.0.0"
-  resolved "https://github.com/TianyiLi/stomp-service.git#b2d335901a0ff68b4de868e1692fc0d58e065d28"
+  resolved "git+https://github.com/TianyiLi/stomp-service.git#3b466e8240b76ad320e415c74d71760d39a93537"
   dependencies:
     webstomp-client "^1.2.0"
     ws "^4.0.0"

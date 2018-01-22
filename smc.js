@@ -1,35 +1,17 @@
 #!/usr/local/bin/node
 
 const conf = require('./smc_config.js')
-const { StompService, stompConfig } = require('stomp-service')
 const StateMachine = require('javascript-state-machine')
 const merge = require('merge')
 const http = require('http')
 const URL = require('url')
+const service = require('./biz-logic')
 const { EventEmitter } = require('events')
+const { StompService, stompConfig } = require('stomp-service')
+const { bizHandler } = require('./biz-logic')
+global.Promise = require('bluebird')
 
 const rl = require('readline')
-let _interface = rl.createInterface(process.stdin, process.stdout)
-_interface.setPrompt('smc >>>')
-_interface.prompt()
-_interface.on('line', async line => {
-  if (line === '') return _interface.prompt()
-  if (line === 'state') { return console.log(globalState); _interface.prompt(); }
-  if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
-  let _line = line.split(/\s+/g)
-  console.log(_line)
-  let [e, arg] = _line
-  let send = { e }
-  try {
-    let _arg = JSON.parse(arg)
-    send = Object.assign(send, {arg:_arg})
-  } catch (error) {
-    // console.log(error)
-  }
-  console.log('%j', send)
-  client.emit('message', send)
-  _interface.prompt()
-})
 
 let globalSess = {}
 let globalState = {}
@@ -38,8 +20,32 @@ let innerProcess = new EventEmitter()
 let msgQueue = []
 let msgQueueFlag = false
 
-var client = new StompService()
-var fsm = {}
+let client = new StompService()
+let fsm = {}
+
+let _interface = rl.createInterface(process.stdin, process.stdout)
+_interface.setPrompt('smc >>>')
+_interface.prompt()
+_interface.on('line', line => {
+  if (line === '') return _interface.prompt()
+  if (line === 'state') { return console.log(globalState); _interface.prompt(); }
+  if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
+  if (line === '.exit') { return process.emit('SIGINT') }
+  let _line = line.split(/\s+/g)
+  console.log(_line)
+  let [e, arg] = _line
+  let send = { e }
+  try {
+    let _arg = JSON.parse(arg)
+    send = Object.assign(send, { arg: _arg })
+  } catch (error) {
+    // console.log(error)
+  }
+  console.log('%j', send)
+  client.emit('message', send)
+  _interface.prompt()
+})
+
 
 client.configure({
   subscribe: [conf.trig_chan],
@@ -49,9 +55,9 @@ client.configure({
 })
 
 
-var g_onLeaveState = function (lc, args) {
+let g_onLeaveState = function (lc, args) {
   console.log(this.id + '/' + lc.transition + ' ' + this.id + '/leave_' + lc.from)
-  var e = { e: this.id + '/leave_' + lc.from, from: lc.from, to: lc.to, on: lc.transition }
+  let e = { e: this.id + '/leave_' + lc.from, from: lc.from, to: lc.to, on: lc.transition }
   if (args) {
     e.arg = args
     console.log('arg ' + JSON.stringify(args))
@@ -59,10 +65,10 @@ var g_onLeaveState = function (lc, args) {
   client.emit('publish', e)
 }
 
-var g_onEnterState = function (lc, args) {
+let g_onEnterState = function (lc, args) {
   this.refreshScoreboard()
   console.log(this.id + '/' + lc.transition + ' ' + this.id + '/enter_' + lc.to)
-  var e = { e: this.id + '/enter_' + lc.to, from: lc.from, to: lc.to, on: lc.transition }
+  let e = { e: this.id + '/enter_' + lc.to, from: lc.from, to: lc.to, on: lc.transition }
   if (args) {
     e.arg = args
     console.log('arg ' + JSON.stringify(args))
@@ -71,10 +77,10 @@ var g_onEnterState = function (lc, args) {
   client.emit('publish', e)
 }
 
-var g_onAfterEvent = function (lc, args) {
+let g_onAfterEvent = function (lc, args) {
   if (lc.transition == 'goto') return
   console.log(this.id + '/' + lc.transition + ' ' + this.id + '/after_' + lc.transition)
-  var e = { e: this.id + '/after_' + lc.transition, from: lc.from, to: lc.to, on: lc.transition }
+  let e = { e: this.id + '/after_' + lc.transition, from: lc.from, to: lc.to, on: lc.transition }
   if (args) {
     e.arg = args
     console.log('arg ' + JSON.stringify(args))
@@ -84,12 +90,12 @@ var g_onAfterEvent = function (lc, args) {
   innerProcess.emit('afterFinished')
 }
 
-var g_onBeforeEvent = function (lc, args) {
-  var id = this.id
+let g_onBeforeEvent = function (lc, args) {
+  let id = this.id
 
   if (lc.transition === 'goto') return
   console.log(this.id + '/' + lc.transition + ' ' + this.id + '/before_' + lc.transition)
-  var e = { e: id + '/before_' + lc.transition, from: lc.from, to: lc.to, on: lc.transition }
+  let e = { e: id + '/before_' + lc.transition, from: lc.from, to: lc.to, on: lc.transition }
   if (id === 'order' && lc.transition === 'ordered') {
     globalSess = null
     globalSess = {}
@@ -109,14 +115,14 @@ var g_onBeforeEvent = function (lc, args) {
   }
 }
 
-var g_handler = {
+let g_handler = {
   onBeforeTransition: g_onBeforeEvent,
   onLeaveState: g_onLeaveState,
   onEnterState: g_onEnterState,
   onAfterTransition: g_onAfterEvent
 }
 
-var map = {
+let map = {
   sys: [
     { 'name': 'goto', 'from': '*', 'to': function (s) { return s } },
     { 'from': 'none', 'name': 'start', 'to': 'INIT' },
@@ -231,10 +237,10 @@ var map = {
   ]
 }
 
-var fsm_create = function (id, hdl = g_handler) {
+let fsm_create = function (id, hdl = g_handler) {
   // hdl=hdl?hdl:g_handler
   hdl['refreshScoreboard'] = function () {
-    var sm = this
+    let sm = this
     try {
       globalState[sm.id] = sm.state
     } catch (error) {
@@ -264,6 +270,10 @@ client.on('connected', function () {
   fsm_create('auth').refreshScoreboard()
   fsm_create('invoice').refreshScoreboard()
   fsm_create('reader').refreshScoreboard()
+
+  Object.keys(map).forEach(key => {
+    client.emit('publish', {e:`${key}/created`})
+  })
 })
 
 client.on('message', function (message) {
@@ -271,6 +281,27 @@ client.on('message', function (message) {
   console.log(message)
   msgQueue.push(message)
   !msgQueueFlag && innerProcess.emit('message')
+})
+
+client.on('publish', msg => {
+  if (!msg) return;
+  let result
+  try {
+    result = bizHandler(msg)
+  } catch (error) {
+    console.log(error.message)
+    return
+  }
+  if (result) {
+    if (result instanceof Array) {
+      result.forEach(ele => {
+        client.emit('message', ele)
+      })
+      return
+    } else {
+      client.emit('message', result)
+    }
+  }
 })
 
 innerProcess.on('message', function onMsg () {
@@ -293,7 +324,7 @@ innerProcess.on('message', function onMsg () {
           console.log('reading')
           let sm = fsm[_map]
           if (ev.indexOf('goto_') === 0) {
-            var to = ev.substring(5)
+            let to = ev.substring(5)
             resolve(sm.goto(to, msg.arg))
           } else if (sm.can(ev)) {
             sm[ev](msg.arg)
@@ -316,7 +347,7 @@ innerProcess.on('message', function onMsg () {
 
 client.on('error', function (errorFrame) {
   console.log(errorFrame.body)
-  client.disconnect()
+  // client.disconnect()
 })
 
 process.on('SIGINT', function () {
