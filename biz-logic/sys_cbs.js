@@ -1,5 +1,5 @@
-module.exports.cbs={
-    created:function(){
-        $.ebus.send(SMC.trig_chan,{'e':'sys/start'},conn);
-    }
+module.exports.cbs = {
+  created(){
+    return {e:'sys/start'}
+  }
 };

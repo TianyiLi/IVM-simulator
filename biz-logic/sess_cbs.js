@@ -1,5 +1,5 @@
 module.exports.cbs = {
     created: function () {
-        $.ebus.send(trig_chan, { 'e': 'sess/goto_SESSION' }, conn);
+        return { 'e': 'sess/goto_SESSION' }
     }
 };

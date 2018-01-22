@@ -89,32 +89,7 @@
                             $.ebus.send(tran_chan, ev, conn);
                         }
                     });
-                    $.get('http://' + window.location.hostname + ':8080/stat', function (s) {
-                        var ss = s;
-                        if (s.smc) {
-                            ss = s.smc;
-                        }
-                        //alert(JSON.stringify(s));
-                        $.ebus.send(tran_chan, { 'e': 'sys/created', 'init': ss.sys }, conn);
-                        setTimeout(function () {
-                            $.ebus.send(tran_chan, { 'e': 'sess/created', 'init': ss.sess }, conn);
-                            setTimeout(function () {
-                                $.ebus.send(tran_chan, { 'e': 'order/created', 'init': ss.order }, conn);
-                                setTimeout(function () {
-                                    $.ebus.send(tran_chan, { 'e': 'reader/created', 'init': ss.reader }, conn);
-                                    setTimeout(function () {
-                                        $.ebus.send(tran_chan, { 'e': 'auth/created', 'init': ss.auth }, conn);
-                                        setTimeout(function () {
-                                            $.ebus.send(tran_chan, { 'e': 'payment/created', 'init': ss.payment }, conn);
-                                            setTimeout(function () {
-                                                $.ebus.send(tran_chan, { 'e': 'dispense/created', 'init': ss.dispense }, conn);
-                                            }, 2000);
-                                        }, 1000);
-                                    }, 1000);
-                                }, 1000);
-                            }, 1000);
-                        }, 1000);
-                    });
+                    
                 },
                 function () { $('#status').text('failed to connect'); });
             }
