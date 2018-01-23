@@ -1,4 +1,0 @@
-#!/usr/local/bin/node
-console.log(__dirname)
-require('../index.js')
-
