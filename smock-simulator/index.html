@@ -36,20 +36,8 @@
         <div><button type="button" id="conn">Connect</button></div>
         <div><textarea style="width:50%" rows="10" id="msg"></textarea></div>
     </div>
-    <table>
-    <tr><td><button type="button" trig="sys/sys_suspended">sys/sys_suspended</button></td><td><label>暫停服務</label></td><td><input type="text" value='{"msg":"產品已售完，暫時停止服務"}'></input></td></tr>
-    <tr><td><button type="button" trig="order/ordered">order/ordered</button></td><td><label>點菜p_id</label></td><td><input type="text" value='{"p_id":1}'></input></td></tr>
-    <tr><td><button type="button" trig="order/ordered">order/ordered</button></td><td><label>點菜chan</label></td><td><input type="text" value='{"chan":"A1"}'></input></td></tr>
-    <tr><td><button type="button" trig="payment/hint">payment/hint</button></td><td><label>支付提示</label></td><td><input type="text" value='{"payment_method":{"cash":{"price":10},"easycard":{"price":8},"ipass":{"price":6},"isc_moneycoin":{"price":10},"isc_linepay":{"price":10}},"p_id":3,"p_name":"可口可樂","chan":"A1"}'></input></td></tr>
-    <tr><td><button type="button" trig="payment/payment_begin">payment/payment_begin</button></td><td><label>投入第1個硬幣</label></td><td><input type="text" value='{"paid":10}'></input></td></tr>
-    <tr><td><button type="button" trig="payment/hint">payment/hint</button></td><td><label>繼續投入硬幣</label></td><td><input type="text" value='{"paid":20}'></input></td></tr>
-    <tr><td><button type="button" trig="payment/hint">payment/hint</button></td><td><label>已投入足額，等待確認</label></td><td><input type="text" value='{"paid":50,"pay_confirm":false}'></input></td></tr>
-    <tr><td><button type="button" trig="payment/failed">payment/failed</button></td><td><label>支付錯誤</label></td><td><input type="text" value='{"msg":"支付錯誤(305)"}'></input></td></tr>
-    <tr><td><button type="button" trig="dispense/start">dispense/start</button></td><td><label>開始出貨</label></td><td><input type="text" value='{"msg":"完成付款，商品出貨中"}'></input></td></tr>
-    <tr><td><button type="button" trig="dispense/prod_dispensed">dispense/prod_dispensed</button></td><td><label>出貨成功</label></td><td><input type="text" value='{"msg":"請取回商品，銘謝惠顧"}'></input></td></tr>
-    <!-- <tr><td><button type="button" trig="payment/set_countdown">payment/set_countdown</button></td><td><label>顯示倒數器</label></td><td><input type="text" value='{"countdown":45}'></input></td></tr>
-    <tr><td><button type="button" trig="payment/reset_countdown">payment/reset_countdown</button></td><td><label>關閉倒數器</label></td><td><input type="text"></input></td></tr> -->
-    <tr><td><button type="button" trig="payment/input">payment/input</button></td><td><label>確認購買</label></td><td><input type="text" value='{"pay_confirm":true}'></input></td></tr>
+    <table id="select-button">
+    
     </table>
 
     <div id="map"></div>
@@ -102,6 +90,7 @@
             $("button#conn").click();
         });
     </script>
+    <script src="/demo-simulator/js/action.js"></script>
 </body>
 
 </html>

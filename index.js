@@ -33,7 +33,6 @@ server.listen(61614, '0.0.0.0', function () {
   console.log(`Stomp Server listening on 61614`)
 })
 liveServer.start(params)
-console.log(Object.keys(liveServer))
 console.log(`live server listen on ${params.port}\nserver path set to ${params.root}`)
 
 if (process.env.NODE_DEBUG) {
