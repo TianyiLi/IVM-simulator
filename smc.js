@@ -1,4 +1,4 @@
-#!/usr/local/bin/node
+#!/usr/bin/env node
 
 const conf = require('./smc_config.js')
 const StateMachine = require('javascript-state-machine')

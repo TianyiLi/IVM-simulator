@@ -1,7 +1,15 @@
+#!/usr/bin/env node
 const http = require('http')
 const Stomp = require('stomp-broker-js')
 const argv = require('minimist')(process.argv.slice(2))
 const liveServer = require('live-server')
+if (argv['h'] || argv['help'] || argv['H']) {
+  console.log('Usage: sample-server [options]')
+  console.log('\nOptions')
+  console.log('--dist [path]')
+  console.log('--port [port]')
+  return 
+}
 let server = http.createServer()
 let stompServer = new Stomp({ server, debug () { console.log(arguments) } }, '/stomp')
 let params = {
@@ -22,6 +30,7 @@ let params = {
     ['/demo', __dirname + '/demo.html']
   ]
 }
+
 if (argv.dist && argv.dist !== '') {
   params.root = argv.dist
 }
