@@ -12,11 +12,15 @@ module.exports.cbs = {
             return { 'e': 'payment/paid' }
     },
     after_paid: function () {
-        return [{ 'e': 'dispense/goto_none' },
-        { 'e': 'dispense/start' }]
+        return [
+            { 'e': 'dispense/goto_none' },
+            { 'e': 'dispense/start' }
+        ]
     },
     enter_END: function () {
-        return [{ 'e': 'payment/goto_PREPARE' }
-        , { 'e': 'reader/stop' }]
+        return [
+            { 'e': 'payment/goto_PREPARE' }
+            , { 'e': 'reader/stop' }
+        ]
     }
 }

@@ -15,10 +15,10 @@ let params = {
     ['/demo-simulator', __dirname + '/smock-simulator'],
     ['/media', __dirname + '/ad-sample'],
     ['/prod_img', __dirname + '/products-sample'],
-    ['/app/rest/stock.cgi', __dirname + '/rest-sample/stock.html'],
-    ['/app/rest/channel.cgi', __dirname + '/rest-sample/channel.html'],
-    ['/app/rest/media.cgi', __dirname + '/rest-sample/media.html'],
-    ['/app/rest/sys.cgi', __dirname + '/rest-sample/sys.html'],
+    ['/app/rest/stock.cgi', __dirname + '/rest-sample/stock.json'],
+    ['/app/rest/channel.cgi', __dirname + '/rest-sample/channel.json'],
+    ['/app/rest/media.cgi', __dirname + '/rest-sample/media.json'],
+    ['/app/rest/sys.cgi', __dirname + '/rest-sample/sys.json'],
     ['/demo', __dirname + '/demo.html']
   ]
 }

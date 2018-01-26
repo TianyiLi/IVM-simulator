@@ -1,5 +1,5 @@
 module.exports.cbs = {
   created(){
-    return {e:'sys/start'}
+    return [{e:'sys/start'}, {e:'sys/sys_op'}]
   }
 };

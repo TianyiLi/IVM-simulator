@@ -9,11 +9,11 @@ const service = require('./biz-logic')
 const { EventEmitter } = require('events')
 const { StompService, stompConfig } = require('stomp-service')
 const { bizHandler } = require('./biz-logic')
+let { globalSess } = require('./biz-logic/session-storage')
 global.Promise = require('bluebird')
 
 const rl = require('readline')
 
-let globalSess = {}
 let globalState = {}
 
 let innerProcess = new EventEmitter()
@@ -24,7 +24,7 @@ let client = new StompService()
 let fsm = {}
 
 let _interface = rl.createInterface(process.stdin, process.stdout)
-_interface.setPrompt('smc >>>')
+_interface.setPrompt('smc> ')
 _interface.prompt()
 _interface.on('line', line => {
   if (line === '') return _interface.prompt()
@@ -267,12 +267,12 @@ client.on('connected', function () {
   fsm_create('order').refreshScoreboard()
   fsm_create('payment').refreshScoreboard()
   fsm_create('dispense').refreshScoreboard()
-  fsm_create('auth').refreshScoreboard()
-  fsm_create('invoice').refreshScoreboard()
+  // fsm_create('auth').refreshScoreboard()
+  // fsm_create('invoice').refreshScoreboard()
   fsm_create('reader').refreshScoreboard()
 
   Object.keys(map).forEach(key => {
-    client.emit('publish', {e:`${key}/created`})
+    client.emit('publish', { e: `${key}/created` })
   })
 })
 
