@@ -1,19 +1,19 @@
 [
    {
-      "src" : "http://localhost/media/full/Acer%E4%BF%83%E9%8A%B7DM-%E7%9B%B4%E5%BC%8F-01.jpg",
-      "desc" : "Acer促銷DM-直式-01.jpg",
+      "src" : "http://localhost/media/full/video-full-1.webm",
+      "desc" : "test video",
       "position" : "full",
-      "duration" : 10,
-      "type" : "image",
+      "type" : "video",
       "title" : "Acer促銷DM-直式-01.jpg",
       "id" : 1
    },
    {
-      "src" : "http://localhost/media/standard/kg7.mp4",
-      "desc" : "kg7.mp4",
+      "src" : "http://localhost/media/standard/video-top-1-poster.jpg",
+      "desc" : "video-top-1-poster.jpg",
       "position" : "standard",
-      "type" : "video",
-      "title" : "kg7.mp4",
-      "id" : 6
+      "type" : "image",
+      "duration": 10,
+      "title" : "video-top-1-poster.jpg",
+      "id" : 2
    }
 ]
