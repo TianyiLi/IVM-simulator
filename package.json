@@ -17,20 +17,21 @@
   "author": "Paul",
   "license": "MIT",
   "dependencies": {
-    "@types/bluebird": "^3.5.19",
-    "@types/javascript-state-machine": "^2.4.1",
-    "@types/minimist": "^1.2.0",
-    "@types/node": "^9.3.0",
-    "@types/ws": "^4.0.0",
     "bluebird": "^3.5.1",
-    "javascript-state-machine": "./third-party/javascript-state-machine",
+    "javascript-state-machine": "git+https://github.com/TianyiLi/javascript-state-machine.git",
     "live-server": "^1.2.0",
     "merge": "^1.2.0",
-    "minimist": "^1.2.0",
+    "minimist": "1.2.0",
     "stomp": "^0.1.1",
     "stomp-broker-js": "^1.1.1",
     "stomp-service": "git+https://github.com/TianyiLi/stomp-service.git",
     "webstomp-client": "^1.2.0",
     "ws": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.19",
+    "@types/minimist": "^1.2.0",
+    "@types/node": "^9.3.0",
+    "@types/ws": "^4.0.0"
   }
 }
