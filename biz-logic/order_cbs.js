@@ -7,12 +7,9 @@ module.exports.cbs = {
         return { 'e': 'order/goto_MENU' }
     },
     after_ordered: function (e, from, to, arg) {
-        console.log(arguments)
         let _arg;
         let p_id = arg.p_id
         let product = stock.find(ele => ele.id == p_id)
-        console.log(product)
-        console.log(stock)
         _arg = {
             "payment_method":
                 {

@@ -24,28 +24,12 @@ let client = new StompService()
 let fsm = {}
 
 let _interface = rl.createInterface(process.stdin, process.stdout)
-_interface.setPrompt('smc> ')
-_interface.prompt()
-_interface.on('line', line => {
-  if (line === '') return _interface.prompt()
-  if (line === 'state') { return console.log(globalState); _interface.prompt(); }
-  if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
-  if (line === '.exit') { return process.emit('SIGINT') }
-  let _line = line.split(/\s+/g)
-  console.log(_line)
-  let [e, arg] = _line
-  let send = { e }
-  try {
-    let _arg = JSON.parse(arg)
-    send = Object.assign(send, { arg: _arg })
-  } catch (error) {
-    // console.log(error)
-  }
-  console.log('%j', send)
-  client.emit('message', send)
-  _interface.prompt()
-})
 
+function log(){
+  if (process.env.NODE_DEBUG) {
+    console.log(arguments)
+  }
+}
 
 client.configure({
   subscribe: [conf.trig_chan],
@@ -56,22 +40,22 @@ client.configure({
 
 
 let g_onLeaveState = function (lc, args) {
-  console.log(this.id + '/' + lc.transition + ' ' + this.id + '/leave_' + lc.from)
+  log(this.id + '/' + lc.transition + ' ' + this.id + '/leave_' + lc.from)
   let e = { e: this.id + '/leave_' + lc.from, from: lc.from, to: lc.to, on: lc.transition }
   if (args) {
     e.arg = args
-    console.log('arg ' + JSON.stringify(args))
+    log('arg ' + JSON.stringify(args))
   }
   client.emit('publish', e)
 }
 
 let g_onEnterState = function (lc, args) {
   this.refreshScoreboard()
-  console.log(this.id + '/' + lc.transition + ' ' + this.id + '/enter_' + lc.to)
+  log(this.id + '/' + lc.transition + ' ' + this.id + '/enter_' + lc.to)
   let e = { e: this.id + '/enter_' + lc.to, from: lc.from, to: lc.to, on: lc.transition }
   if (args) {
     e.arg = args
-    console.log('arg ' + JSON.stringify(args))
+    log('arg ' + JSON.stringify(args))
   }
 
   client.emit('publish', e)
@@ -79,11 +63,11 @@ let g_onEnterState = function (lc, args) {
 
 let g_onAfterEvent = function (lc, args) {
   if (lc.transition == 'goto') return
-  console.log(this.id + '/' + lc.transition + ' ' + this.id + '/after_' + lc.transition)
+  log(this.id + '/' + lc.transition + ' ' + this.id + '/after_' + lc.transition)
   let e = { e: this.id + '/after_' + lc.transition, from: lc.from, to: lc.to, on: lc.transition }
   if (args) {
     e.arg = args
-    console.log('arg ' + JSON.stringify(args))
+    log('arg ' + JSON.stringify(args))
   }
 
   client.emit('publish', e)
@@ -94,7 +78,7 @@ let g_onBeforeEvent = function (lc, args) {
   let id = this.id
 
   if (lc.transition === 'goto') return
-  console.log(this.id + '/' + lc.transition + ' ' + this.id + '/before_' + lc.transition)
+  log(this.id + '/' + lc.transition + ' ' + this.id + '/before_' + lc.transition)
   let e = { e: id + '/before_' + lc.transition, from: lc.from, to: lc.to, on: lc.transition }
   if (id === 'order' && lc.transition === 'ordered') {
     globalSess = null
@@ -105,7 +89,7 @@ let g_onBeforeEvent = function (lc, args) {
   }
   if (args) {
     e.arg = args
-    console.log('arg ' + JSON.stringify(args))
+    log('arg ' + JSON.stringify(args))
 
     client.emit('publish', e)
     let arg = globalSess[id]
@@ -244,7 +228,7 @@ let fsm_create = function (id, hdl = g_handler) {
     try {
       globalState[sm.id] = sm.state
     } catch (error) {
-      console.log(error)
+      log(error)
     }
     return sm
   }
@@ -260,7 +244,7 @@ let fsm_create = function (id, hdl = g_handler) {
 }
 
 client.on('connected', function () {
-  console.log('Connected')
+  log('Connected')
 
   fsm_create('sys').refreshScoreboard()
   fsm_create('sess').refreshScoreboard()
@@ -277,8 +261,8 @@ client.on('connected', function () {
 })
 
 client.on('message', function (message) {
-  console.log(`Got message`)
-  console.log(message)
+  log(`Got message`)
+  log(message)
   msgQueue.push(message)
   !msgQueueFlag && innerProcess.emit('message')
 })
@@ -289,7 +273,7 @@ client.on('publish', msg => {
   try {
     result = bizHandler(msg)
   } catch (error) {
-    console.log(error.message)
+    log(error.message)
     return
   }
   if (result) {
@@ -321,7 +305,7 @@ innerProcess.on('message', function onMsg () {
           resolve()
         })
         if (_map in fsm) {
-          console.log('reading')
+          log('reading')
           let sm = fsm[_map]
           if (ev.indexOf('goto_') === 0) {
             let to = ev.substring(5)
@@ -330,10 +314,10 @@ innerProcess.on('message', function onMsg () {
             sm[ev](msg.arg)
           } else {
             resolve('')
-            console.log('can not transition by event ' + sm.id + '/' + ev + ' from ' + sm.state)
+            log('can not transition by event ' + sm.id + '/' + ev + ' from ' + sm.state)
           }
         } else {
-          console.log('invalid map:' + _map)
+          log('invalid map:' + _map)
           resolve('')
         }
       })
@@ -346,7 +330,7 @@ innerProcess.on('message', function onMsg () {
 })
 
 client.on('error', function (errorFrame) {
-  console.log(errorFrame.body)
+  log(errorFrame.body)
   // client.disconnect()
 })
 
@@ -418,7 +402,52 @@ let server = http.createServer((request, response) => {
   }
 })
 
-server.listen(8080, () => {
-  console.log('smc server listen on 8080')
-})
-client.start()
+let start = function(){
+  server.listen(8080, () => {
+    log('smc server listen on 8080')
+  })
+  return client.start()
+}
+module.exports.start = start
+module.exports.send = data => client.emit('message', data)
+module.exports.stop = function() {
+  client.disconnect()
+  server.close()
+  innerProcess = null
+  !module.parent && _interface.close()
+}
+
+if (!module.parent) {
+  start()
+  _interface.setPrompt('smc> ')
+  _interface.prompt()
+  _interface.on('line', line => {
+    if (line === '') return _interface.prompt()
+    if (line === 'state') { return console.log(globalState); _interface.prompt(); }
+    if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
+    if (lint === 'help') { 
+      console.log('[Options]')
+      console.log('state\tCheck current modules state')
+      console.log('sess\tCheck current session data')
+      console.log('help\tThis help')
+      console.log('\nData transition')
+      console.log('[event-name] [argument]')
+      console.log('For example: \norder/ordered {"p_id":"486"}\n')
+      console.log('.exit')
+    }
+    if (line === '.exit') { return process.emit('SIGINT') }
+    let _line = line.split(/\s+/g)
+    console.log(_line)
+    let [e, arg] = _line
+    let send = { e }
+    try {
+      let _arg = JSON.parse(arg)
+      send = Object.assign(send, { arg: _arg })
+    } catch (error) {
+      // console.log(error)
+    }
+    console.log('%j', send)
+    client.emit('message', send)
+    _interface.prompt()
+  })
+}

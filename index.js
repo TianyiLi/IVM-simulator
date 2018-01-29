@@ -6,12 +6,13 @@ const liveServer = require('live-server')
 if (argv['h'] || argv['help'] || argv['H']) {
   console.log('Usage: sample-server [options]')
   console.log('\nOptions')
-  console.log('--dist [path]')
-  console.log('--port [port]')
-  return 
+  console.log('\t--dist \t[live-server root path]')
+  console.log('\t--port \t[live-server port]')
+  console.log('\t--quiet\tlive-server log level set to 0')
+  return
 }
 let server = http.createServer()
-let stompServer = new Stomp({ server, debug () { console.log(arguments) } }, '/stomp')
+let stompServer = new Stomp({ server, debug () { process.env.NODE_DEBUG && console.log(arguments) } }, '/stomp')
 let params = {
   port: 80,
   host: '0.0.0.0',
@@ -31,18 +32,15 @@ let params = {
   ]
 }
 
-if (argv.dist && argv.dist !== '') {
+if (argv.dist && argv.dist !== true) {
   params.root = argv.dist
 }
-if (argv.port && argv.port !== '' && /^\d*$/.test(argv.port)) {
+if (argv.port && argv.port !== true && /^\d*$/.test(argv.port)) {
   params.port = parseInt(argv.port)
 }
-
-server.listen(61614, '0.0.0.0', function () {
-  console.log(`Stomp Server listening on 61614`)
-})
-liveServer.start(params)
-console.log(`live server listen on ${params.port}\nserver path set to ${params.root}`)
+if (argv.quiet) {
+  params.logLevel = 0
+}
 
 if (process.env.NODE_DEBUG) {
   stompServer.subscribe('/**', function (msg, headers) {
@@ -66,3 +64,16 @@ process.on('SIGINT', () => {
 process.on('beforeExit', () => {
   exitProcess()
 })
+
+module.exports.SamplerServer = liveServer
+module.exports.StompBrokerServer = server
+module.exports.config = params
+module.exports.close = exitProcess
+
+if (!module.parent) {
+  server.listen(61614, '0.0.0.0', function () {
+    console.log(`Stomp Server listening on 61614`)
+  })
+  liveServer.start(params)
+  console.log(`live server listen on ${params.port}\nserver path set to ${params.root}`)
+}
