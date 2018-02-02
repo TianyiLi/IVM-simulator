@@ -425,7 +425,7 @@ if (!module.parent) {
     if (line === '') return _interface.prompt()
     if (line === 'state') { return console.log(globalState); _interface.prompt(); }
     if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
-    if (lint === 'help') { 
+    if (line === 'help') { 
       console.log('[Options]')
       console.log('state\tCheck current modules state')
       console.log('sess\tCheck current session data')
@@ -433,7 +433,7 @@ if (!module.parent) {
       console.log('\nData transition')
       console.log('[event-name] [argument]')
       console.log('For example: \norder/ordered {"p_id":"486"}\n')
-      console.log('.exit')
+      return
     }
     if (line === '.exit') { return process.emit('SIGINT') }
     let _line = line.split(/\s+/g)
