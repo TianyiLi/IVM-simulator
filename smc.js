@@ -25,7 +25,7 @@ let fsm = {}
 
 let _interface = rl.createInterface(process.stdin, process.stdout)
 
-function log(){
+function log () {
   if (process.env.NODE_DEBUG) {
     console.log(arguments)
   }
@@ -402,52 +402,78 @@ let server = http.createServer((request, response) => {
   }
 })
 
-let start = function(){
+let start = function () {
   server.listen(8080, () => {
     log('smc server listen on 8080')
   })
   return client.start()
 }
+
+function readLine (line) {
+  if (line === '') return _interface.prompt()
+  if (line === 'state') {
+    return console.log(globalState); _interface.prompt();
+  }
+  if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
+  if (line === 'failed' || line === 'ok') {
+    let sess = globalSess
+    globalSess = merge.recursive(true, sess, {
+      dispense:{
+        mid: 'dispense_' + line
+      }
+    })
+    console.log('Set')
+    console.log(globalSess['dispense'])
+    console.log('to dispense')
+    return
+  }
+  if (line === 'help') {
+    console.log('[Options]')
+    console.log('state\tCheck current modules state')
+    console.log('sess\tCheck current session data')
+    console.log('help\tThis help')
+    console.log('ok\tdispense ok simulate')
+    console.log('failed\tdispense failed simulate')
+    console.log('\nData transition')
+    console.log('[event-name] [argument]')
+    console.log('For example: \norder/ordered {"p_id":"486"}\n')
+    return
+  }
+  if (line === '.exit') { return 'exit' }
+  let _line = line.split(/\s+/g)
+  console.log(_line)
+  let [e, arg] = _line
+  let send = { e }
+  try {
+    let _arg = JSON.parse(arg)
+    send = Object.assign(send, { arg: _arg })
+  } catch (error) {
+    // console.log(error)
+  }
+  console.log('%j', send)
+  client.emit('message', send)
+}
+
 module.exports.start = start
 module.exports.send = data => client.emit('message', data)
-module.exports.stop = function() {
+module.exports.stop = function () {
   client.disconnect()
   server.close()
   innerProcess = null
   !module.parent && _interface.close()
 }
+module.exports.readLine = readLine
 
 if (!module.parent) {
   start()
   _interface.setPrompt('smc> ')
   _interface.prompt()
-  _interface.on('line', line => {
-    if (line === '') return _interface.prompt()
-    if (line === 'state') { return console.log(globalState); _interface.prompt(); }
-    if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
-    if (line === 'help') { 
-      console.log('[Options]')
-      console.log('state\tCheck current modules state')
-      console.log('sess\tCheck current session data')
-      console.log('help\tThis help')
-      console.log('\nData transition')
-      console.log('[event-name] [argument]')
-      console.log('For example: \norder/ordered {"p_id":"486"}\n')
-      return
-    }
-    if (line === '.exit') { return process.emit('SIGINT') }
-    let _line = line.split(/\s+/g)
-    console.log(_line)
-    let [e, arg] = _line
-    let send = { e }
-    try {
-      let _arg = JSON.parse(arg)
-      send = Object.assign(send, { arg: _arg })
-    } catch (error) {
-      // console.log(error)
-    }
-    console.log('%j', send)
-    client.emit('message', send)
-    _interface.prompt()
-  })
+  function _prompt(fn){
+    return (line) => Promise.resolve(fn(line)).then((result)=>{
+      if (result === 'exit') return process.emit('SIGINT')
+      _interface.prompt()
+    })
+  }
+  
+  _interface.on('line', line => _prompt(readLine)(line))
 }

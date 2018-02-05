@@ -27,6 +27,7 @@ let params = {
     ['/app/rest/stock.cgi', __dirname + '/rest-sample/stock.json'],
     ['/app/rest/channel.cgi', __dirname + '/rest-sample/channel.json'],
     ['/app/rest/media.cgi', __dirname + '/rest-sample/media.json'],
+    ['/app/rest/drop.php', __dirname + '/rest-sample/drop.json'],
     ['/app/rest/sys.cgi', __dirname + '/rest-sample/sys.json'],
     ['/demo', __dirname + '/demo.html']
   ]
