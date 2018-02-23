@@ -13,13 +13,14 @@ module.exports.cbs = {
         _arg = {
             "payment_method":
                 {
-                    "isc_alipay": { "price": 100 },
-                    "cash": { "price": 100 }
+                    "isc_alipay": { "price": product.price },
+                    "cash": { "price": product.price },
+                    "easycardedc": { "price": product.price }
                 },
             "p_id": p_id,
             "p_name": product.name,
-            "price": 100
+            "price": product.price
         };
-        return { 'e': 'payment/hint', arg: _arg }
+        return [{ 'e': 'payment/goto_none' }, { 'e': 'payment/start' }, { 'e': 'payment/hint', arg: _arg }]
     }
 };

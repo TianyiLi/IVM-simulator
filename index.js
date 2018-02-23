@@ -28,7 +28,7 @@ let params = {
     ['/app/rest/channel.cgi', __dirname + '/rest-sample/channel.json'],
     ['/app/rest/media.cgi', __dirname + '/rest-sample/media.json'],
     ['/app/rest/sys.cgi', __dirname + '/rest-sample/sys.json'],
-    ['/demo', __dirname + '/demo.html']
+    ['/demo', __dirname + '/demo']
   ]
 }
 

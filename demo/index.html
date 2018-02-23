@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>實境模擬</title>
+  <script src="demo-simulator/js/jquery-1.9.1.js"></script>
+  <script src="demo-simulator/js/stomp.min.js"></script>
+  <script src="demo-simulator/js/jquery.ebus.js"></script>
+  <link rel="stylesheet" href="/demo/style.css">
+</head>
+
+<body>
+  <iframe src="/index.html" frameborder="0" class="iframe-container" width="1080" height="1920"></iframe>
+  <div class="user-action">
+    <div class="action">
+      <label for="coin-amount">投入多少:</label>
+      <input type="number" name="" id="coin-amount" value='0'>
+      <button id="coin-insert">硬幣投入</button>
+    </div>
+    <div class="action">
+      <button id="easycardedc">悠遊卡</button>
+    </div>
+    <div class="action">
+      <button id="code-scan">QRCode讀取</button>
+    </div>
+    <div class="action">
+      <button id="dispense-success">出貨成功</button>
+    </div>
+  </div>
+</body>
+
+</html>
+<script>
+  var tranChan = '/queue/app'
+  var paymentStatus = {
+    afterBegin: false,
+    price: 0,
+    methods: {},
+  }
+
+  Object.defineProperty(paymentStatus, 'dispense', {
+    set(value) {
+      $('#dispense-success').attr('disabled', !value)
+    },
+    get() {
+      return $('#dispense-success').attr('disabled')
+    },
+    configurable: true
+  })
+
+  Object.defineProperties(paymentStatus.methods, {
+    cash: {
+      set(value) {
+        $('#coin-insert').attr('disabled', !value)
+      },
+      get(value) {
+        return !$('#coin-insert').attr('disabled')
+      },
+      configurable: true,
+    },
+    easycardedc: {
+      set(value) {
+        $('#easycardedc').attr('disabled', !value)
+      },
+      get() {
+        return $('#easycardedc').attr('disabled')
+      },
+      configurable: true,
+    },
+    iscAnycode: {
+      set(value) {
+        $('#code-scan').attr('disabled', !value)
+      },
+      get() {
+        return $('#code-scan').attr('disabled')
+      },
+      configurable: true
+    }
+  })
+  $(document).ready(function () {
+    reInit()
+    paymentStatus.dispense = false
+  })
+
+  var conn = $.ebus.connect({ ip: location.hostname, "subscribe": ['/topic/app'] }, function () {
+    console.log('ebus connected');
+    $('body').on('ebusEvent', function (e, ebusEvent) {
+      $(document).trigger(ebusEvent.e, ebusEvent);
+    });
+  }, function () {
+    console.log('ebus failed to connect');
+  })
+  $(document).on({
+    'payment/after_start payment/after_hint payment/after_payment_begin payment/after_input payment/enter_END payment/leave_TRANSACTION dispense/enter_DISPENSE dispense/leave_DISPENSE': renewStatus
+  })
+
+  function renewStatus(e, opt) {
+    console.log(opt)
+    let methods = opt.arg && opt.arg.payment_method || {}
+    if (opt.e === 'payment/after_hint' && methods && !paymentStatus.afterBegin) {
+      console.log(methods)
+      paymentStatus.price = opt.arg.price
+      paymentStatus.methods.cash = 'cash' in methods
+      paymentStatus.methods.iscAnycode = 'isc_alipay' in methods || 'isc_anycode' in methods
+    }
+    if (opt.e === 'payment/after_input') {
+      paymentStatus.methods.easycardedc = 'easycardedc' === opt.arg.payment_method
+    }
+    if (opt.e === 'payment/after_payment_begin') {
+      paymentStatus.methods.easycardedc = !!(opt.arg.method && opt.arg.method === 'easycardedc')
+      paymentStatus.methods.iscAnycode = false
+      paymentStatus.methods.cash = !!(opt.arg.method && opt.arg.method === 'cash')
+      paymentStatus.afterBegin = true
+    }
+    if (opt.e === 'payment/enter_END') {
+      paymentStatus.methods.cash = false
+    }
+    if (opt.e === 'payment/leave_TRANSACTION') {
+      paymentStatus.afterBegin = false
+      reInit()
+    }
+    if (opt.e === 'payment/after_start') {
+      $(document).removeData('txno')
+    }
+    if (opt.e === 'dispense/enter_DISPENSE') {
+      paymentStatus.dispense = true
+    }
+    if (opt.e === 'dispense/leave_DISPENSE') {
+      paymentStatus.dispense = false
+    }
+  }
+
+  function reInit() {
+    paymentStatus.methods.cash = false
+    paymentStatus.methods.easycardedc = false
+    paymentStatus.methods.iscAnycode = false
+    paymentStatus.price = false
+  }
+
+  function ebusSend() {
+    $.ebus.send(tranChan, arguments[0], conn)
+  }
+
+  function getTxno() {
+    let _txno = $(document).data('txno') && $(document).data('txno') || ~~(new Date().valueOf() / 1000)
+    $(document).data('txno', _txno)
+    return _txno
+  }
+
+  $('#coin-insert').on('click', function () {
+    let coinValue = parseInt($('#coin-amount').val())
+    if (!coinValue) return;
+    let alreadyPaid = paymentStatus.afterBegin && parseInt($('#coin-amount').data('paid')) || 0
+    console.log(alreadyPaid)
+    let _txno = getTxno()
+    if (!paymentStatus.afterBegin) {
+      ebusSend({ e: 'payment/payment_begin', arg: { method: 'cash', txno: _txno } })
+    }
+    if (coinValue > 0 && alreadyPaid < paymentStatus.price) {
+      ebusSend({
+        e: 'payment/hint', arg: {
+          price: paymentStatus.price,
+          paid: alreadyPaid + coinValue,
+          txno: _txno
+        }
+      })
+      $('#coin-amount').data('paid', alreadyPaid + coinValue)
+    }
+  })
+  $('#easycardedc').on('click', function () {
+    ebusSend({ e: 'payment/paid', arg: { txno: getTxno(), data: 'test' } })
+  })
+  $('#code-scan').on('click', function () {
+    ebusSend({ e: 'payment/payment_begin', arg: { txno: getTxno(), method: 'isc_anycode', msg: '開始測試支付' } })
+    ebusSend({ e: 'payment/paid', arg: { txno: getTxno(), data: 'test' } })
+  })
+
+  $('#dispense-success').on('click', function(){
+    ebusSend({e:'dispense/prod_dispensed', arg: { "mid": "dispense_ok", "msg": "ok:付货正常:00000001:00000001" }})
+  })
+</script>

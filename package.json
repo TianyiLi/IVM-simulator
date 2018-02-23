@@ -1,11 +1,13 @@
 {
   "name": "local-simulator",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "vmc smock simulator",
   "main": "index.js",
   "scripts": {
     "test": "mocha ./test/*.spec.js",
-    "start": "node ./index.js"
+    "sample-server": "node ./index.js",
+    "smc-service": "node ./smc.js",
+    "start": "npm run sample-server & npm run smc-service"
   },
   "engines": {
     "node": ">=4"
