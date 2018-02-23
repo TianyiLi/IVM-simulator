@@ -3,6 +3,7 @@ const { globalSess } = require('../biz-logic/session-storage')
 const smcService = require('../smc')
 const axios = require('axios')
 const assert = require('assert')
+const stock = require('../rest-sample/stock.json')
 
 let sleep = ms => new Promise((resolve, reject) => {setTimeout(resolve, ms)})
 
@@ -36,7 +37,8 @@ describe('#SMC service test', () => {
       let order = response.data
       assert.equal(order.p_id, '486')
       response = await axios.get('http://localhost:8080/payment')
-      assert.equal(response.data.price , 100)
+      let price = stock.find(ele=>ele.id == order.p_id).price
+      assert.equal(response.data.price , price)
     })
     it('Payment stat should on PREPARE', async function(){
       let response = await axios.get('http://localhost:8080/stat/payment')

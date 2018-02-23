@@ -9,8 +9,11 @@ if (argv['h'] || argv['help'] || argv['H']) {
   console.log('\t--dist \t[live-server root path]')
   console.log('\t--port \t[live-server port]')
   console.log('\t--quiet\tlive-server log level set to 0')
+  console.log('\t--only-broker\t[run only stomp broker]')
+  console.log('\t--only-live-server\t[run only live-server]')
   return
 }
+
 let server = http.createServer()
 let stompServer = new Stomp({ server, debug () { process.env.NODE_DEBUG && console.log(arguments) } }, '/stomp')
 let params = {
@@ -41,7 +44,6 @@ if (argv.port && argv.port !== true && /^\d*$/.test(argv.port)) {
 if (argv.quiet) {
   params.logLevel = 0
 }
-
 if (process.env.NODE_DEBUG) {
   stompServer.subscribe('/**', function (msg, headers) {
     var topic = headers.destination
@@ -71,9 +73,19 @@ module.exports.config = params
 module.exports.close = exitProcess
 
 if (!module.parent) {
-  server.listen(61614, '0.0.0.0', function () {
+  let status = 0
+  if (argv['only-broker']) {
+    status += 1
+  }
+  if (argv['only-live-server']) {
+    status += 2
+  }
+
+  (status === 3 || status === 1) && server.listen(61614, '0.0.0.0', function () {
     console.log(`Stomp Server listening on 61614`)
-  })
-  liveServer.start(params)
-  console.log(`live server listen on ${params.port}\nserver path set to ${params.root}`)
+  });
+  (status === 3 || status === 2) && ~function () {
+    liveServer.start(params)
+    console.log(`live server listen on ${params.port}\nserver path set to ${params.root}`)
+  }
 }
