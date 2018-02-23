@@ -76,16 +76,15 @@ if (!module.parent) {
   let status = 0
   if (argv['only-broker']) {
     status += 1
-  }
-  if (argv['only-live-server']) {
+  } else if (argv['only-live-server']) {
     status += 2
   }
 
-  (status === 3 || status === 1) && server.listen(61614, '0.0.0.0', function () {
+  (status === 0 || status === 1) && server.listen(61614, '0.0.0.0', function () {
     console.log(`Stomp Server listening on 61614`)
   });
-  (status === 3 || status === 2) && ~function () {
+  (status === 0 || status === 2) && (function () {
     liveServer.start(params)
     console.log(`live server listen on ${params.port}\nserver path set to ${params.root}`)
-  }
+  })();
 }
