@@ -7,6 +7,8 @@ const url = require('url')
 const path = require('path')
 const liveServer = require('live-server')
 
+global.Promise = require('bluebird')
+
 /**
  * sample-server argument setup
  * @type {{'stock-config'?:string, host?:string, dist:?string, port?:string, media?:string, 'only-broker'?:boolean, 'only-live-server'?:boolean, quiet:boolean}}
@@ -31,11 +33,12 @@ if (argv['h'] || argv['help'] || argv['H']) {
 }
 
 let server = http.createServer()
-let stompServer = new Stomp({ server, debug () { process.env.NODE_DEBUG && console.log(arguments) } }, '/stomp')
+let stompServer = new Stomp({ server, debug () { process.env.NODE_DEBUG && console.log(arguments) } }, ['/stomp', '/stomp/websocket'])
 let mediaFolderServicePath = path.normalize((argv.media && argv.media !== true && fs.existsSync(argv.media)) && argv.media || __dirname + '/ad-sample')
-let stockServicePath = path.normalize((argv['stock-config'] && argv['stock-config'] !== true && fs.existsSync(argv['stock-config'])) && argv['stock-config']|| __dirname + '/rest-sample/stock.json')
+let stockServicePath = path.normalize((argv['stock-config'] && argv['stock-config'] !== true && fs.existsSync(argv['stock-config'])) && argv['stock-config'] || __dirname + '/rest-sample/stock.json')
 let params = {
   port: 80,
+  brokerPort: 61614,
   host: 'localhost',
   root: process.cwd(),
   open: true,
@@ -103,6 +106,8 @@ process.on('beforeExit', () => {
   exitProcess()
 })
 
+stompServer.start()
+
 module.exports.SamplerServer = liveServer
 module.exports.StompBrokerServer = server
 module.exports.config = params
@@ -116,8 +121,8 @@ if (!module.parent) {
     status += 2
   }
 
-  (status === 0 || status === 1) && server.listen(61614, '0.0.0.0', function () {
-    console.log(`Stomp Server listening on 61614`)
+  (status === 0 || status === 1) && server.listen(61614, 'localhost', ()=>{
+    console.log('StompBroker listen on 61614')
   });
   (status === 0 || status === 2) && (function () {
     liveServer.start(params)

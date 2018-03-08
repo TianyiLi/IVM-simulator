@@ -1203,15 +1203,16 @@ statuses@~1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.3.1.tgz#faf51b9eb74aaef3b3acf4ad5f61abf24cb7b93e"
 
-stomp-broker-js@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/stomp-broker-js/-/stomp-broker-js-1.1.1.tgz#a740815c1278712d46f5d45598990551ffb3ca66"
+"stomp-broker-js@https://github.com/TianyiLi/StompBrokerJS/archive/1.0.tar.gz":
+  version "1.1.5"
+  resolved "https://github.com/TianyiLi/StompBrokerJS/archive/1.0.tar.gz#65566a7829b9c7312ec03da557e42dc8e215bdcd"
   dependencies:
+    minimist "^1.2.0"
     ws "^3.1.0"
 
-"stomp-service@git+https://github.com/TianyiLi/stomp-service.git":
-  version "1.0.0"
-  resolved "git+https://github.com/TianyiLi/stomp-service.git#3b466e8240b76ad320e415c74d71760d39a93537"
+"stomp-service@https://github.com/TianyiLi/stomp-service/archive/1.0.0.tar.gz":
+  version "1.0.3"
+  resolved "https://github.com/TianyiLi/stomp-service/archive/1.0.0.tar.gz#b5b7c24453d0a852166b592ad65d3ea4ae376a8b"
   dependencies:
     webstomp-client "^1.2.0"
     ws "^4.0.0"

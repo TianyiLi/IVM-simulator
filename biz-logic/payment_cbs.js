@@ -23,7 +23,7 @@ module.exports.cbs = {
         }
     },
     after_input: function (e, from, to, arg) {
-        return [{ e: 'payment/payment_begin', arg: { msg: '啟動' + arg.payment_method, method: arg.payment_method } }]
+        // return [{ e: 'payment/payment_begin', arg: { msg: '啟動' + arg.payment_method, method: arg.payment_method } }]
     },
     after_payment_begin: function (e, from, to, arg) {
         // When user use /demo to simulate, this one seems not necessary.
