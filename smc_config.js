@@ -1,4 +1,4 @@
-var ebus_broker='0.0.0.0';
+var ebus_broker='localhost';
 var ebus_broker_port=61614;
 var tran_chan='/topic/app';
 var trig_chan='/queue/app';

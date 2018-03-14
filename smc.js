@@ -9,6 +9,9 @@ const service = require('./biz-logic')
 const { EventEmitter } = require('events')
 const { StompService, stompConfig } = require('stomp-service')
 const { bizHandler } = require('./biz-logic')
+
+const argv = require('minimist')(process.argv.slice(2))
+
 let { globalSess } = require('./biz-logic/session-storage')
 global.Promise = require('bluebird')
 
@@ -32,6 +35,8 @@ function log () {
 }
 
 client.configure({
+  host: argv['host'] || conf.ebus_broker,
+  port: 61614,
   subscribe: [conf.trig_chan],
   publish: [conf.tran_chan],
   debug: false,
@@ -251,8 +256,8 @@ client.on('connected', function () {
   fsm_create('order').refreshScoreboard()
   fsm_create('payment').refreshScoreboard()
   fsm_create('dispense').refreshScoreboard()
-  // fsm_create('auth').refreshScoreboard()
-  // fsm_create('invoice').refreshScoreboard()
+  fsm_create('auth').refreshScoreboard()
+  fsm_create('invoice').refreshScoreboard()
   fsm_create('reader').refreshScoreboard()
 
   Object.keys(map).forEach(key => {
