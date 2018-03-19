@@ -37,7 +37,7 @@ describe('#SMC service test', () => {
       let order = response.data
       assert.equal(order.p_id, '486')
       response = await axios.get('http://localhost:8080/payment')
-      let price = stock.find(ele=>ele.id == order.p_id).price
+      let price = 100
       assert.equal(response.data.price , price)
     })
     it('Payment stat should on PREPARE', async function(){

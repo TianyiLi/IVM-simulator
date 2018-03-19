@@ -6,7 +6,6 @@ const fs = require('fs')
 const url = require('url')
 const path = require('path')
 const liveServer = require('live-server')
-const axios = require('axios')
 
 global.Promise = require('bluebird')
 
@@ -52,7 +51,7 @@ let params = {
   mount: [
     ['/demo-simulator', __dirname + '/smock-simulator'],
     ['/media', mediaFolderServicePath],
-    ['/product', productFolderPath],
+    ['/products', productFolderPath],
     ['/app/rest/sys.cgi', __dirname + '/rest-sample/sys.json'],
     ['/demo', __dirname + '/demo']
   ],
