@@ -119,5 +119,6 @@ $ sampler-server --help
 |/app/rest/channel.cgi|channel list|
 |/app/rest/sys.cgi|System error would display at here|
 |/demo|show the whole page which you serve on /|
+|/demo?dist=\<http url>|serve your own page which already on server|
 
 For more information please view the WIKI

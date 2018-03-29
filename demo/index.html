@@ -13,7 +13,7 @@
 </head>
 
 <body>
-  <iframe src="/index.html" frameborder="0" class="iframe-container" width="1080" height="1920"></iframe>
+  <iframe id="ui-container" src="/index.html" frameborder="0" class="iframe-container" width="1080" height="1920"></iframe>
   <div class="user-action">
     <div class="action">
       <label for="coin-amount">投入多少:</label>
@@ -40,7 +40,11 @@
     price: 0,
     methods: {},
   }
-
+  var GET = {}
+  location.search.substring(1).split('&&').forEach(str => (GET[str.replace(/=(.*)/, '')] = str.replace(/(.*)=/, '')))
+  if (GET.dist) {
+    document.querySelector('#ui-container').src = /^http:\/\//.test(GET.dist) ? GET.dist : `http://${GET.dist}`
+  }
   Object.defineProperty(paymentStatus, 'dispense', {
     set(value) {
       $('#dispense-success').attr('disabled', !value)
@@ -178,7 +182,7 @@
     ebusSend({ e: 'payment/paid', arg: { txno: getTxno(), data: 'test' } })
   })
 
-  $('#dispense-success').on('click', function(){
-    ebusSend({e:'dispense/prod_dispensed', arg: { "mid": "dispense_ok", "msg": "ok:付货正常:00000001:00000001" }})
+  $('#dispense-success').on('click', function () {
+    ebusSend({ e: 'dispense/prod_dispensed', arg: { "mid": "dispense_ok", "msg": "ok:付货正常:00000001:00000001" } })
   })
 </script>

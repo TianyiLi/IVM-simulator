@@ -24,8 +24,6 @@ body {
 }
 .user-action{
   position: absolute;
-  height: 200px;
-  width: 200px;
   background: gray;
   top:0px;
   left: 560px;
