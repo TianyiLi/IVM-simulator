@@ -1,6 +1,6 @@
 {
   "name": "local-simulator",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "vmc smock simulator",
   "main": "index.js",
   "scripts": {

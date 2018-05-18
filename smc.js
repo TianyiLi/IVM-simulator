@@ -9,6 +9,7 @@ const service = require('./biz-logic')
 const { EventEmitter } = require('events')
 const { StompService, stompConfig } = require('stomp-service')
 const { bizHandler } = require('./biz-logic')
+const axios = require('axios').default
 
 const argv = require('minimist')(process.argv.slice(2))
 
@@ -29,9 +30,14 @@ let fsm = {}
 let _interface = rl.createInterface(process.stdin, process.stdout)
 
 function log () {
-  if (process.env.NODE_DEBUG) {
-    console.log(arguments)
+  if (process.env.NODE_DEBUG || isRemote()) {
+    console.log(...arguments)
   }
+}
+
+function isRemote () {
+  let state = (argv['host'] && !(/(localhost|0\.0\.0\.0|127\.0\.0\.1)/.test(argv['host'])))
+  return state
 }
 
 client.configure({
@@ -250,6 +256,11 @@ let fsm_create = function (id, hdl = g_handler) {
 
 client.on('connected', function () {
   log('Connected')
+  if (isRemote()) {
+    process.env.NODE_DEBUG = true
+    console.log('指定IP爲 ' + argv['host'])
+    return
+  }
 
   fsm_create('sys').refreshScoreboard()
   fsm_create('sess').refreshScoreboard()
@@ -268,6 +279,9 @@ client.on('connected', function () {
 client.on('message', function (message) {
   log(`Got message`)
   log(message)
+  if (isRemote()) {
+    return
+  }
   msgQueue.push(message)
   !msgQueueFlag && innerProcess.emit('message')
 })
@@ -341,9 +355,11 @@ client.on('error', function (errorFrame) {
 
 process.on('SIGINT', function () {
   client.disconnect()
-  server.close()
   _interface.close()
   innerProcess = null
+  if (!isRemote()) {
+    server.close()
+  }
 })
 
 /**
@@ -386,44 +402,61 @@ function urlAnalyze (path) {
   return result
 }
 
-let server = http.createServer((request, response) => {
-  let url = URL.parse(request.url)
-  let result = urlAnalyze(url.pathname)
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Request-Method', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-  response.setHeader('Access-Control-Allow-Headers', '*');
-  if (result.state) {
-    if (typeof result.data === 'string') {
-      response.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' })
-      response.end(result.data)
+function createSMCServer () {
+  if (isRemote()) return false
+  return http.createServer((request, response) => {
+    let url = URL.parse(request.url)
+    let result = urlAnalyze(url.pathname)
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Request-Method', '*');
+    response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    response.setHeader('Access-Control-Allow-Headers', '*');
+    if (result.state) {
+      if (typeof result.data === 'string') {
+        response.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' })
+        response.end(result.data)
+      } else {
+        response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+        response.end(JSON.stringify(result.data, null, 4))
+      }
     } else {
-      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
-      response.end(JSON.stringify(result.data, null, 4))
+      response.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' })
+      response.end('request url is not valid')
     }
-  } else {
-    response.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' })
-    response.end('request url is not valid')
-  }
-})
+  })
+}
+
+let server = createSMCServer()
 
 let start = function () {
-  server.listen(8080, () => {
+  !isRemote() && server.listen(8080, () => {
     log('smc server listen on 8080')
   })
   return client.start()
 }
 
-function readLine (line) {
+async function readLine (line) {
   if (line === '') return _interface.prompt()
   if (line === 'state') {
+    if (isRemote()) {
+      globalState = await axios.get(`http://${argv['host']}/app/rest/stat.cgi`).then(res => res.data)
+    }
     return console.log(globalState); _interface.prompt();
   }
-  if (line === 'sess') { return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt(); }
-  if (line === 'failed' || line === 'ok') {
+  if (line === 'sess') {
+    if (isRemote()) {
+      try {
+        globalSess = await axios.get(`http://${argv['host']}/app/rest/sess.cgi`).then(res=> res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    return console.log(JSON.stringify(globalSess, null, 2)); _interface.prompt();
+  }
+  if ((line === 'failed' || line === 'ok') && !isRemote()) {
     let sess = globalSess
     globalSess = merge.recursive(true, sess, {
-      dispense:{
+      dispense: {
         mid: 'dispense_' + line
       }
     })
@@ -463,7 +496,9 @@ module.exports.start = start
 module.exports.send = data => client.emit('message', data)
 module.exports.stop = function () {
   client.disconnect()
-  server.close()
+  if (!isRemote()) {
+    server.close()
+  }
   innerProcess = null
   !module.parent && _interface.close()
 }
@@ -473,12 +508,12 @@ if (!module.parent) {
   start()
   _interface.setPrompt('smc> ')
   _interface.prompt()
-  function _prompt(fn){
-    return (line) => Promise.resolve(fn(line)).then((result)=>{
+  function _prompt (fn) {
+    return (line) => Promise.resolve(fn(line)).then((result) => {
       if (result === 'exit') return process.emit('SIGINT')
       _interface.prompt()
     })
   }
-  
+
   _interface.on('line', line => _prompt(readLine)(line))
 }

@@ -45,7 +45,7 @@ let params = {
   brokerPort: 61614,
   host: 'localhost',
   root: process.cwd(),
-  open: argv.on,
+  open: false,
   wait: 3000,
   logLevel: 2,
   mount: [

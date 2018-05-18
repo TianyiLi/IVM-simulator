@@ -20,7 +20,11 @@
     { event: "payment/paid", desc: "交易完成", arg: '{"paid":100,"txno":' + timeStamp() + '}' },
     { event: "payment/failed", desc: "支付錯誤", arg: '{"msg":"支付錯誤(305)"}' },
     { event: "dispense/prod_dispensed", desc: "出貨成功", arg: '{"mid":"dispense_ok","msg":"ok:付货正常:00000001:00000001"}' },
-    { event: "dispense/failed", desc: "出貨失敗", arg: '{"mid":"dispense_failed","msg":"failed:付货失败:01011101:00000000"}' }
+    { event: "dispense/failed", desc: "出貨失敗", arg: '{"mid":"dispense_failed","msg":"failed:付货失败:01011101:00000000"}' },
+    { event: "invoice/hint", desc: "統一編號", arg: '{"invoice_unino":false,"msg":"是否輸入統一編號？", "mid":"q_input_unino"}' },
+    { event: "invoice/hint", desc: "統一編號", arg: '{"invoice_receipt":false,"msg":"是否列印明細？", "mid":"q_print_receipt"}' },
+    { event: "invoice/hint", desc: "收據列印中", arg: '{"type":"info","mid":"receipt_printing","msg":"receipt_printing"}' },
+    { event: "invoice/success", desc: "收據列印成功", arg: '{"type":"info","mid":"receipt_printed","msg":"receipt_printed"}' }
   ], _$table = $('#select-button')
 
   events.map(function (ele) {
