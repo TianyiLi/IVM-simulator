@@ -26,7 +26,7 @@ if (argv['h'] || argv['help'] || argv['H']) {
     --dist=[path]             [live-server root path]
     --port=[port]             [live-server port]
     --media=[path]            [media folder service place]
-    --stock=[path]          [serve your own product image]
+    --stock=[path]            [serve your own product image]
     --chno-length=[number]    [channel list length setup]
     --only-broker             [run only stomp broker]
     --only-live-server        [run only live-server]

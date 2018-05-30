@@ -81,26 +81,21 @@ Than, you can get the list from '/app/rest/media.cgi'
 
 ### Custom stock list service
 
-If you want to serve your own stock list, you need to make a config file like
+If you want to serve your own stock list, you can create a folder which containing the products pictures that you want to serve. Then start the server by passing this argument
 
-```json
-[
-  {
-        "dm" : "http://localhost/test.png",
-        "name" : "test",
-        "img" : "http://localhost/test.png",
-        "desc" : "",
-        "id" : "1",
-        "title" : "test",
-        "price" : 50,
-        "soldout" : false
-  }
-]
+```bash
+sample-server --stock <path-to-folder>
 ```
 
-Be aware that 'dm' and 'img' two properties should be work.
+Sometimes, you want to get your products with the channel list sort, this provide a sample can allow you to assign the channel length you want.
 
-* Get more info by
+And you can get the channel list from http://localhost/app/rest/channel.cgi
+
+```bash
+sample-server --chno-length 20
+```
+
+* Get more info
 
 ```bash
 $ sampler-server --help
