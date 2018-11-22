@@ -7,19 +7,20 @@ body {
 
 .iframe-container {
   transform: scale(0.3);
-  transform-origin: 0 0;
+  transform-origin: left top;
 }
 
 @media (min-height: 800px) {
   .iframe-container {
     transform: scale(0.4);
-    transform-origin: 0 0;
+    transform-origin: left top;
   }
 }
 
 @media (min-height: 900px) {
   .iframe-container {
-    transform: scale(0.5)
+    transform: scale(0.5);
+    transform-origin: left top;
   }
 }
 .user-action{
