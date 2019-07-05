@@ -22,7 +22,7 @@ describe('#Product relative List rendering correct', () => {
           id: 0,
           title: '測試用',
           price: 100,
-          soldout: false,
+          soldout: true,
           en_us_name: 'test',
           en_us_description: 'test'
         }
@@ -41,7 +41,7 @@ describe('#Product relative List rendering correct', () => {
           id: 0,
           title: '測試用',
           price: 100,
-          soldout: true,
+          soldout: false,
           en_us_name: 'test',
           en_us_description: 'test'
         }
