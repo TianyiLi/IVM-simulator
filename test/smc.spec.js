@@ -7,17 +7,17 @@ const stock = require('../rest-sample/stock.json')
 
 let sleep = ms => new Promise((resolve, reject) => {setTimeout(resolve, ms)})
 
-before(async () => {
-  StompBrokerServer.listen(61614, 'localhost')
-  await smcService.start()
-})
-after(() => {
-  smcService.stop()
-  StompBrokerServer.close()
-  process.exit()
-})
 
 describe('#SMC service test', () => {
+  before(async () => {
+    StompBrokerServer.listen(61614, 'localhost')
+    await smcService.start()
+  })
+  after(() => {
+    smcService.stop()
+    StompBrokerServer.close()
+    process.exit()
+  })
   describe('#Rest Service', () => {
     it('http://localhost:8080/stat should get correct response', async () => {
       let response = await axios.get('http://localhost:8080/stat')

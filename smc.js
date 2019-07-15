@@ -27,7 +27,7 @@ let client = new StompService()
 let fsm = {}
 
 let _interface = rl.createInterface(process.stdin, process.stdout)
-
+if (process.env.NODE_DEBUG) console.log('Debug on')
 function log () {
   if (process.env.NODE_DEBUG || isRemote()) {
     console.log(...arguments)

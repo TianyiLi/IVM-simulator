@@ -119,6 +119,7 @@ process.on('beforeExit', () => {
   exitProcess()
 })
 
+stompServer.start()
 
 module.exports.SamplerServer = liveServer
 module.exports.StompBrokerServer = server
@@ -134,7 +135,6 @@ if (!module.parent) {
   }
   
   (status === 0 || status === 1) && server.listen(61614, 'localhost', () => {
-    stompServer.start()
     console.log('StompBroker listen on 61614')
   });
   (status === 0 || status === 2) && (function () {
