@@ -47,6 +47,7 @@ let params = {
   root: process.cwd(),
   open: false,
   wait: 3000,
+  cors: true,
   logLevel: 2,
   mount: [
     ['/demo-simulator', __dirname + '/smock-simulator'],
