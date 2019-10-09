@@ -95,6 +95,12 @@ And you can get the channel list from http://localhost/app/rest/channel.cgi
 sample-server --chno-length 20
 ```
 
+Specific the amount of the product
+
+```bash
+sample-server --stock-length 20
+```
+
 * Get more info
 
 ```bash

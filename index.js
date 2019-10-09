@@ -28,6 +28,7 @@ if (argv['h'] || argv['help'] || argv['H']) {
     --media=[path]            [media folder service place]
     --stock=[path]            [serve your own product image]
     --chno-length=[number]    [channel list length setup]
+    --stock-length=[number]   [stock list length sestup]
     --only-broker             [run only stomp broker]
     --only-live-server        [run only live-server]
     --quiet                   [live-server log level set to 0]
@@ -68,7 +69,8 @@ let params = {
           response.end(JSON.stringify(mediaList, null, 4))
         }
         if (_part === 'stock.cgi') {
-          let stockList = product.getStockList(request.headers.host, productFolderPath)
+          let numsOfStock = argv['stock-length'] ? +argv['stock-length'] : 1
+          let stockList = product.getStockList(request.headers.host, productFolderPath, numsOfStock)
           response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
           response.end(JSON.stringify(stockList, null, 4))
         }

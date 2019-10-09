@@ -40,6 +40,11 @@
         "to": "END"
     },
     {
+        "from": "PREPARE",
+        "name": "got_invoice_no",
+        "to": "PREPARE"
+    },
+    {
         "from": "PROCESS",
         "name": "hint",
         "to": "PROCESS"
@@ -56,13 +61,23 @@
     },
     {
         "from": "PROCESS",
-        "name": "got_invoice_no",
-        "to": "PROCESS"
-    },
-    {
-        "from": "PROCESS",
         "name": "success",
         "to": "END"
+    },
+    {
+        "from": "END",
+        "name": "input",
+        "to": "END"
+    },
+    {
+        "from": "END",
+        "name": "hint",
+        "to": "END"
+    },
+    {
+        "from": "END",
+        "name": "printout",
+        "to": "PROCESS"
     },
     {
         "from": "END",

@@ -5,5 +5,10 @@ module.exports.cbs = {
     },
     enter_END: function () {
         return { 'e': 'dispense/goto_none' }
+    },
+    prod_dispense () {
+        return {
+            e: 'invoice/start'
+        }
     }
 };

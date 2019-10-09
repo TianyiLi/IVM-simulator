@@ -1,8 +1,10 @@
 [
     { "from": "none", "name": "start", "to": "UNAUTHEN" },
     { "from": "UNAUTHEN", "name": "auth_request", "to": "UNAUTHEN" },
-    { "from": "UNAUTHEN", "name": "auth_hint", "to": "UNAUTHEN" },
+    { "from": "UNAUTHEN", "name": "hint", "to": "UNAUTHEN" },
     { "from": "UNAUTHEN", "name": "auth_failed", "to": "UNAUTHEN" },
     { "from": "UNAUTHEN", "name": "auth_ok", "to": "AUTHEN" },
-    { "from": "AUTHEN", "name": "logout", "to": "UNAUTHEN" }
+    { "from": "UNAUTHEN", "name": "stop", "to": "none" },
+    { "from": "AUTHEN", "name": "logout", "to": "UNAUTHEN" },
+    { "from": "AUTHEN", "name": "stop", "to": "none" }
 ]

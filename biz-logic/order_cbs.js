@@ -17,7 +17,8 @@ module.exports.cbs = {
                 {
                     "isc_alipay": { "price": 100 },
                     "cash": { "price": 100 },
-                    "easycardedc": { "price": 100 }
+                    "easycardedc": { "price": 100 },
+                    "fmsco": { price: 100}
                 },
             "p_id": p_id,
             "p_name": '測試用',
