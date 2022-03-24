@@ -24,7 +24,7 @@
     "javascript-state-machine": "git+https://github.com/TianyiLi/javascript-state-machine.git",
     "live-server": "^1.2.1",
     "merge": "^1.2.1",
-    "minimist": "1.2.0",
+    "minimist": "1.2.6",
     "stomp": "^0.1.1",
     "stomp-broker-js": "https://github.com/TianyiLi/StompBrokerJS/archive/1.0.tar.gz",
     "stomp-service": "https://github.com/TianyiLi/stomp-service/archive/1.0.0.tar.gz",
